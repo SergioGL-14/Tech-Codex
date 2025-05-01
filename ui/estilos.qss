@@ -1,0 +1,124 @@
+/*********************************************
+ * Estilo Global - Fondo oscuro, fuente monospace
+ *********************************************/
+QWidget {
+    /* Fondo general oscuro */
+    background-color: #2a2a2a; 
+    /* Fuente monoespaciada para darle aire retro */
+    font-family: 'Consolas', 'Courier New', monospace;
+    color: #cccccc;
+    font-size: 14px;
+}
+
+/*********************************************
+ * MainWindow
+ *********************************************/
+QMainWindow {
+    background-color: #2a2a2a;
+}
+
+/*********************************************
+ * Barra lateral QListWidget
+ *********************************************/
+QListWidget {
+    background-color: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    margin: 5px;
+    padding: 12px 8px;
+}
+
+QListWidget::item {
+    color: #cccccc;
+    padding: 10px;
+    margin: 3px 0;
+    border-radius: 4px;
+}
+
+QListWidget::item:selected {
+    background-color: #333333;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/*********************************************
+ * QGroupBox - "Tarjetas" por defecto (sin usar)
+ *********************************************/
+QGroupBox {
+    background-color: #333333;
+    border: 1px solid #555555;
+    border-radius: 6px;
+    margin-top: 15px;
+    padding: 15px;
+}
+
+/*********************************************
+ * Sobrescribimos SOLO para nuestras tarjetas
+ *********************************************/
+QGroupBox#cardBox {
+    /* Borde exterior gris, esquinas redondeadas */
+    background: transparent;
+    border: 2px solid #888;
+    border-radius: 6px;
+    margin-top: 0;   /* eliminamos el hueco superior */
+    padding: 0;      /* dejamos que el layout interno defina los márgenes */
+}
+
+/* Anulamos completamente la zona de título reservada */
+QGroupBox#cardBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    margin: 0;
+    padding: 0;
+    height: 0;              /* quita el espacio que reservaba el title-area */
+    border: none;
+    background: transparent;
+}
+
+/* Todos los QLabel internos quedan sin bordes ni fondos */
+QGroupBox#cardBox QLabel {
+    background: transparent;
+    border: none;
+}
+
+/*********************************************
+ * Textos (QTextEdit, QTextBrowser)
+ *********************************************/
+QTextEdit, QTextBrowser {
+    background-color: transparent;
+    border: none;
+    padding: 5px;
+}
+
+/*********************************************
+ * Botones (QPushButton)
+ *********************************************/
+QPushButton {
+    background-color: #3c3f41;
+    border: 1px solid #5a5a5a;
+    border-radius: 4px;
+    padding: 6px 15px;
+    color: #cccccc;
+}
+
+QPushButton:hover {
+    background-color: #505353;
+    border-color: #707070;
+    color: #ffffff;
+}
+
+/*********************************************
+ * Scrollbars minimalistas
+ *********************************************/
+QScrollBar:vertical {
+    width: 8px;
+    background-color: #2a2a2a;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #888888;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #aaaaaa;
+}
