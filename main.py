@@ -282,9 +282,9 @@ def main() -> None:
     sys.excepthook = excepthook
 
     app = QApplication(sys.argv)
-    icon_path = BASE_DIR / "icons" / "TechCodex.ico"
-    app.setWindowIcon(QIcon(str(icon_path)))
-    app.setStyle("Fusion")
+    ico = resource_path("icons", "TechCodex.ico")
+    if ico.exists():
+        app.setWindowIcon(QIcon(str(ico)))
 
     # Carga de estilos QSS
     qss = resource_path("ui", "estilos.qss")
