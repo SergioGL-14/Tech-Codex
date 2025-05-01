@@ -16,7 +16,7 @@ import sys
 import traceback
 from pathlib import Path
 from typing import Any, Callable
-
+from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt, QObject, QThread, pyqtSignal, QSize
 from PyQt6.QtGui import QFont, QColor, QIcon
 from PyQt6.QtWidgets import (
@@ -282,6 +282,8 @@ def main() -> None:
     sys.excepthook = excepthook
 
     app = QApplication(sys.argv)
+    icon_path = BASE_DIR / "icons" / "TechCodex.ico"
+    app.setWindowIcon(QIcon(str(icon_path)))
     app.setStyle("Fusion")
 
     # Carga de estilos QSS
