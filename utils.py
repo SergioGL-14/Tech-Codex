@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Any, Iterator, Optional, Sequence
 import sys
 import os
-import json
 
 from PyQt6.QtWidgets import (
     QFileDialog,
@@ -34,7 +33,6 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
 )
 
-from cryptography.fernet import Fernet
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -80,9 +78,6 @@ APP_EXT    = {**SCRIPT_EXT, **{".exe": "EXE"}}
 LOG_DIR  = DATA_DIR / "logs"; LOG_DIR.mkdir(exist_ok=True)
 LOG_PATH = LOG_DIR / "techcodex.log"
 
-CONFIG_DIR = DATA_DIR / "config"; CONFIG_DIR.mkdir(exist_ok=True)
-CONFIG_PATH = CONFIG_DIR / "config.enc"
-KEY_PATH    = CONFIG_DIR / "key.key"
 
 # ╔═══════════════  Esquema SQL (migración simple)  ═════════════════╗
 _SCHEMA_SQL: str = """
@@ -253,39 +248,6 @@ def log_execution_error(error_msg: str, file_path: str, lenguaje: str = "") -> N
         LOG_PATH.write_text(new_entry + existing, encoding="utf-8")
     except Exception as e:
         print(f"ERROR al escribir en el log: {e}")
-
-# ╔══════════════════════  Autenticación GitHub  ═════════════════════╗  
-def generate_key():
-    if not KEY_PATH.exists():
-        key = Fernet.generate_key()
-        with open(KEY_PATH, "wb") as f:
-            f.write(key)
-
-def load_key():
-    with open(KEY_PATH, "rb") as f:
-        return f.read()
-
-def save_config(data: dict):
-    generate_key()
-    key = load_key()
-    fernet = Fernet(key)
-    json_data = json.dumps(data).encode()
-    encrypted = fernet.encrypt(json_data)
-    with open(CONFIG_PATH, "wb") as f:
-        f.write(encrypted)
-
-def load_config() -> dict | None:
-    if not CONFIG_PATH.exists():
-        return None
-    key = load_key()
-    fernet = Fernet(key)
-    with open(CONFIG_PATH, "rb") as f:
-        encrypted = f.read()
-    try:
-        decrypted = fernet.decrypt(encrypted)
-        return json.loads(decrypted.decode())
-    except Exception:
-        return None
 
 # ╔═══════════════  Componentes UI genéricos  ══════════════════════╗
 class RepoCard(QGroupBox):

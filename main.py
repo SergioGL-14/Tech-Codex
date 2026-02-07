@@ -42,9 +42,6 @@ from sections.diary_section         import DiarySection
 from sections.incidences_section    import IncidenciasSection
 from sections.documentation_section import DocumentationSection
 from sections.about_section         import AboutSection
-from sections.github_section        import GitHubSection
-from sections.gdrive_section        import GDriveSection
-from sections.onedrive_section      import OneDriveSection
 
 # ── Help para capturar excepciones no atrapadas ─────────────────────
 def excepthook(exc_type, exc_value, exc_tb):
@@ -157,10 +154,6 @@ class MainWindow(QMainWindow):
         self._add_entry("📖", "Documentación")
         self._add_entry("ℹ️", "Acerca De")
 
-        self._add_header("Integraciones")
-        self._add_entry("🐙", "GitHub")
-        self._add_entry("☁️", "Google Drive")
-        self._add_entry("📂", "OneDrive")
 
     def _switch(self, idx: int) -> None:
         if idx < 0: return
@@ -178,9 +171,6 @@ class MainWindow(QMainWindow):
             ("🚨  Diario de Incidencias", IncidenciasSection),
             ("📖  Documentación", DocumentationSection),
             ("ℹ️  Acerca De", AboutSection),
-            ("🐙  GitHub", GitHubSection),
-            ("☁️  Google Drive", GDriveSection),
-            ("📂  OneDrive", OneDriveSection),
         ]:
             while row < self.menu.count():
                 itm = self.menu.item(row)
@@ -196,7 +186,7 @@ class MainWindow(QMainWindow):
             if cls is AppsSection:
                 widget = cls(APPS_DIR, APP_EXT)
             # Secciones sin argumentos
-            elif cls in (DocumentationSection, AboutSection, NewsSection, GitHubSection, GDriveSection, OneDriveSection):
+            elif cls in (DocumentationSection, AboutSection, NewsSection):
                 widget = cls()
             # El resto de secciones toman la BD como parámetro
             else:
