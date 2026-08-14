@@ -6,10 +6,11 @@
 2. [Estructura del Proyecto](#estructura-del-proyecto)
 3. [Requisitos e Instalación](#requisitos-e-instalaci%C3%B3n)
 4. [Arquitectura y Flujo de Datos](#arquitectura-y-flujo-de-datos)
-5. [Módulo Principal: `main.py`](#m%C3%B3dulo-principal-mainpy)
-6. [Utilidades Comunes: `utils.py`](#utilidades-comunes-utilspy)
-7. [Sistema de Logging](#sistema-de-logging)
-8. [Secciones (`sections/`)](#secciones-sections)
+5. [Ejecución Local y Rutas Confiables](#ejecución-local-y-rutas-confiables)
+6. [Módulo Principal: `main.py`](#m%C3%B3dulo-principal-mainpy)
+7. [Utilidades Comunes: `utils.py`](#utilidades-comunes-utilspy)
+8. [Sistema de Logging](#sistema-de-logging)
+9. [Secciones (`sections/`)](#secciones-sections)
    - [Noticias (`news_section.py`)](#noticias-news_sectionpy)
    - [Consejo del Día (`tips_section.py`)](#consejo-del-d%C3%ADa-tips_sectionpy)
    - [Repositorio de Comandos (`commands_section.py`)](#repositorio-de-comandos-commands_sectionpy)
@@ -18,11 +19,11 @@
    - [Diario de Desarrollo (`diary_section.py`)](#diario-de-desarrollo-diary_sectionpy)
    - [Diario de Incidencias (`incidences_section.py`)](#diario-de-incidencias-incidences_sectionpy)
    - [Documentación (`documentation_section.py`)](#documentaci%C3%B3n-documentation_sectionpy)
-9. [Base de Datos](#base-de-datos)
-10. [Gestión de Assets y Rutas](#gesti%C3%B3n-de-assets-y-rutas)
-11. [Estilo y Temas](#estilo-y-temas)
-12. [Manejo de Iconos](#manejo-de-iconos)
-13. [Expansión y Personalización](#expansi%C3%B3n-y-personalizaci%C3%B3n)
+10. [Base de Datos](#base-de-datos)
+11. [Gestión de Assets y Rutas](#gesti%C3%B3n-de-assets-y-rutas)
+12. [Estilo y Temas](#estilo-y-temas)
+13. [Manejo de Iconos](#manejo-de-iconos)
+14. [Expansión y Personalización](#expansi%C3%B3n-y-personalizaci%C3%B3n)
 
 ---
 
@@ -45,37 +46,39 @@
 
 ## Estructura del Proyecto
 
-```bash
-TheTechCodex/
-├── main.py
-├── utils.py
-├── database/             
-│   ├── techcodex.bd          # techcodex.db (SQLite)
-│   ├── .csv                  # Csv con Datos
-├── ui/                   # estilos.qss
-├── sections/             # news, tips, commands, scripts, apps, diary, incidences, documentation
-│   ├── news_section.py
-│   ├── tips_section.py
-│   ├── commands_section.py
-│   ├── scripts_section.py
+```text
+Tech-Codex/
+├── main.py                         # Aplicación y ventana principal
+├── utils.py                        # Rutas, SQLite, logging y widgets comunes
+├── requirements.txt
+├── sections/                       # Módulos de las secciones funcionales
+│   ├── about_section.py
 │   ├── apps_section.py
+│   ├── commands_section.py
 │   ├── diary_section.py
+│   ├── documentation_section.py
+│   ├── editor_section.py
 │   ├── incidences_section.py
-│   └── documentation_section.py
-├── logs/                 # techcodex.log
-├── docs/                 # Documentación local
-├── scripts/              # Scripts portables del usuario
-├── app/                  # Aplicaciones portables añadidas
-├── icons/                # Iconos personalizados
+│   ├── news_section.py
+│   ├── scripts_section.py
+│   └── tips_section.py
+├── ui/estilos.qss
+├── about.md
+├── LICENSE
 └── README.md
 ```
+
+En desarrollo, `utils.py` crea automáticamente `database/`, `logs/`, `scripts/`
+y `app/` para los datos de la aplicación. No forman parte de la estructura
+versionada. En una instalación empaquetada, la base de datos, los logs y los
+recursos de usuario se guardan bajo el directorio de datos del usuario.
 
 ## Requisitos e Instalación
 
 - **Python 3.10+**
 - Dependencias:
   ```bash
-  pip install PyQt6 PyQt6-WebEngine feedparser
+   pip install -r requirements.txt
   ```
 - Clonar repo y entrar:
   ```bash
@@ -96,18 +99,25 @@ TheTechCodex/
 4. Secciones usan `utils.get_conn()` para CRUD en SQLite.
 5. Logging de errores en tiempo real a `logs/techcodex.log`.
 
+## Ejecución Local y Rutas Confiables
+
+Los scripts y las aplicaciones se lanzan como procesos locales mediante
+`subprocess`; no se ejecutan en un servidor remoto ni dentro de un sandbox.
+Solo deben registrarse o seleccionarse archivos y carpetas locales de rutas
+confiables, cuyo contenido y origen hayan sido verificados por el usuario.
+La aplicación comprueba que la ruta exista, pero no sustituye esa revisión ni
+aplica una política de confianza o permisos adicional.
 
 ## Módulo Principal: `main.py`
 
-- **`_SCHEMA_SQL`**: SQL para crear tablas si faltan.
+- **`_SCHEMA_SQL`** (en `utils.py`): SQL para crear tablas si faltan.
 - **`init_db()`**: arranca BD y activa foreign keys.
 - **`excepthook()`**: captura excepciones globales y las manda al logger.
-- **`ProcWorker(QThread)`**: ejecuta comandos/procesos en background.
+- **`ProcWorker(QObject)`**: ejecuta comandos/procesos en background.
 - **`MainWindow`**:
-  - `_switch(self, idx)`: cambia de sección.
-  - `_run_generic(self, path, hidden=False)`: ejecuta scripts/apps.
-  - `_open_folder(self, path)`: abre carpetas.
-  - `_log_error(self, source, message)`: graba en `techcodex.log`.
+   - `_switch(self, idx)`: cambia de sección.
+   - `_run_generic(self, path, lang)`: ejecuta scripts/apps locales.
+   - `_open_folder(self, path)`: abre carpetas.
 
 
 ## Utilidades Comunes: `utils.py`
@@ -116,7 +126,7 @@ TheTechCodex/
 - **BD**: `get_conn()`, `fetchone(sql, args)`, `fetchall()`, `exec_sql()`.
 - **Files**: `get_relative_path_or_copy(src)`, manejo de assets.
 - **UI**: `clear_layout()`, `RepoCard`, `AssetDialog`, `TextEditorDialog`.
-- **Iconos**: `_slugify()`, `_copy_icon()`, `_pixmap()`.
+- **Iconos**: funciones locales de `diary_section.py` y `documentation_section.py`.
 
 
 ## Sistema de Logging
