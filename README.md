@@ -1,57 +1,59 @@
 # The Tech Codex
 
-## Índice
+## Index
 
-1. [Visión General](#visión-general)
-2. [Estructura del Proyecto](#estructura-del-proyecto)
-3. [Requisitos e Instalación](#requisitos-e-instalaci%C3%B3n)
-4. [Arquitectura y Flujo de Datos](#arquitectura-y-flujo-de-datos)
-5. [Ejecución Local y Rutas Confiables](#ejecución-local-y-rutas-confiables)
-6. [Módulo Principal: `main.py`](#m%C3%B3dulo-principal-mainpy)
-7. [Utilidades Comunes: `utils.py`](#utilidades-comunes-utilspy)
-8. [Sistema de Logging](#sistema-de-logging)
-9. [Secciones (`sections/`)](#secciones-sections)
-   - [Noticias (`news_section.py`)](#noticias-news_sectionpy)
-   - [Consejo del Día (`tips_section.py`)](#consejo-del-d%C3%ADa-tips_sectionpy)
-   - [Repositorio de Comandos (`commands_section.py`)](#repositorio-de-comandos-commands_sectionpy)
-   - [Repositorio de Scripts (`scripts_section.py`)](#repositorio-de-scripts-scripts_sectionpy)
-   - [Repositorio de Apps (`apps_section.py`)](#repositorio-de-apps-apps_sectionpy)
-   - [Diario de Desarrollo (`diary_section.py`)](#diario-de-desarrollo-diary_sectionpy)
-   - [Diario de Incidencias (`incidences_section.py`)](#diario-de-incidencias-incidences_sectionpy)
-   - [Documentación (`documentation_section.py`)](#documentaci%C3%B3n-documentation_sectionpy)
-10. [Base de Datos](#base-de-datos)
-11. [Gestión de Assets y Rutas](#gesti%C3%B3n-de-assets-y-rutas)
-12. [Estilo y Temas](#estilo-y-temas)
-13. [Manejo de Iconos](#manejo-de-iconos)
-14. [Expansión y Personalización](#expansi%C3%B3n-y-personalizaci%C3%B3n)
+1. [Overview](#overview)
+2. [Project structure](#project-structure)
+3. [Requirements and installation](#requirements-and-installation)
+4. [Architecture and data flow](#architecture-and-data-flow)
+5. [Local execution and trusted paths](#local-execution-and-trusted-paths)
+6. [Main module: `main.py`](#main-module-mainpy)
+7. [Common utilities: `utils.py`](#common-utilitites-utilspy)
+8. [Logging system](#logging-system)
+9. [Sections (`sections/`)](#sections-sections)
+   - [News (`news_section.py`)](#news-news_sectionpy)
+   - [Tip of the day (`tips_section.py`)](#tip-of-the-day-tips_sectionpy)
+   - [Command repository (`commands_section.py`)](#command-repository-commands_sectionpy)
+   - [Script repository (`scripts_section.py`)](#script-repository-scripts_sectionpy)
+   - [App repository (`apps_section.py`)](#app-repository-apps_sectionpy)
+   - [Development diary (`diary_section.py`)](#development-diary-diary_sectionpy)
+   - [Incident diary (`incidences_section.py`)](#incident-diary-incidences_sectionpy)
+   - [Documentation (`documentation_section.py`)](#documentation-documentation_sectionpy)
+10. [Database](#database)
+11. [Asset and path handling](#asset-and-path-handling)
+12. [Style and themes](#style-and-themes)
+13. [Icon handling](#icon-handling)
+14. [Extension and customization](#extension-and-customization)
 
 ---
 
-## Visión General
+## Overview
 
-**The Tech Codex** es una aplicación de escritorio multiplataforma (Windows, macOS, Linux), desarrollada en Python 3.10+ con PyQt6 y QtWebEngine. Su misión es ofrecer un "centro de mando" para técnicos informáticos, centralizando:
+**The Tech Codex** is a cross-platform desktop application (Windows, macOS,
+Linux) written in Python 3.10+ with PyQt6 and QtWebEngine. Its mission is to
+be a "command center" for IT technicians, centralizing:
 
-- Agregador y lector RSS con previsualización embebida.
-- Consejos del día organizados y filtrables.
-- Repositorios de comandos, scripts y apps portables.
-- Diarios de desarrollo e incidencias.
-- Documentación local y enlaces externos con editor WYSIWYG.
-- Sistema de Logging centralizado.
+- RSS aggregator and reader with embedded preview.
+- Daily tips, organized and filterable.
+- Repositories of commands, scripts and portable apps.
+- Development and incident diaries.
+- Local documentation and external links with a WYSIWYG editor.
+- Centralized logging system.
 
-## Historial de Versiones
+## Version history
 
-| Versión | Fecha       | Cambios principales                                                                                   |
-|---------|-------------|-------------------------------------------------------------------------------------------------------|
-| 1.0     | 26/04/2025  | Primera versión estable. Integración de todas las secciones y sistema de Logging. |
+| Version | Date       | Main changes |
+|---------|------------|--------------|
+| 1.0     | 26/04/2025 | First stable release. All sections integrated plus the logging system. |
 
-## Estructura del Proyecto
+## Project structure
 
 ```text
 Tech-Codex/
-├── main.py                         # Aplicación y ventana principal
-├── utils.py                        # Rutas, SQLite, logging y widgets comunes
+├── main.py                         # Application and main window
+├── utils.py                        # Paths, SQLite, logging, common widgets
 ├── requirements.txt
-├── sections/                       # Módulos de las secciones funcionales
+├── sections/                       # Functional section modules
 │   ├── about_section.py
 │   ├── apps_section.py
 │   ├── commands_section.py
@@ -68,70 +70,71 @@ Tech-Codex/
 └── README.md
 ```
 
-En desarrollo, `utils.py` crea automáticamente `database/`, `logs/`, `scripts/`
-y `app/` para los datos de la aplicación. No forman parte de la estructura
-versionada. En una instalación empaquetada, la base de datos, los logs y los
-recursos de usuario se guardan bajo el directorio de datos del usuario.
+During development, `utils.py` automatically creates `database/`, `logs/`,
+`scripts/` and `app/` for application data. They are not part of the
+versioned tree. In a packaged install, database, logs and user assets live
+under the user data directory.
 
-## Requisitos e Instalación
+## Requirements and installation
 
 - **Python 3.10+**
-- Dependencias:
+- Dependencies:
   ```bash
-   pip install -r requirements.txt
+  pip install -r requirements.txt
   ```
-- Clonar repo y entrar:
+- Clone the repo and enter it:
   ```bash
-  git clone <url>
-  cd TheTechCodex
+  git clone https://github.com/SergioGL-14/Tech-Codex.git
+  cd Tech-Codex
   ```
-- Ejecutar:
+- Run:
   ```bash
   python main.py
   ```
-- *(Opcional)* Personalizar tema en `ui/estilos.qss`.
+- *(Optional)* Customize the theme in `ui/estilos.qss`.
 
-## Arquitectura y Flujo de Datos
+## Architecture and data flow
 
-1. **`main.py`** inicializa la ventana principal y la BD.
-2. Menú lateral (`QListWidget`) para secciones.
-3. `_switch(idx)` carga dinámicamente el widget de cada sección.
-4. Secciones usan `utils.get_conn()` para CRUD en SQLite.
-5. Logging de errores en tiempo real a `logs/techcodex.log`.
+1. **`main.py`** initializes the main window and the DB.
+2. Side menu (`QListWidget`) for sections.
+3. `_switch(idx)` dynamically loads each section's widget.
+4. Sections use `utils.get_conn()` for SQLite CRUD.
+5. Errors log in real time to `logs/techcodex.log`.
 
-## Ejecución Local y Rutas Confiables
+## Local execution and trusted paths
 
-Los scripts y las aplicaciones se lanzan como procesos locales mediante
-`subprocess`; no se ejecutan en un servidor remoto ni dentro de un sandbox.
-Solo deben registrarse o seleccionarse archivos y carpetas locales de rutas
-confiables, cuyo contenido y origen hayan sido verificados por el usuario.
-La aplicación comprueba que la ruta exista, pero no sustituye esa revisión ni
-aplica una política de confianza o permisos adicional.
+Scripts and apps are launched as local processes through `subprocess`; they
+do not run on a remote server or inside a sandbox. Only register or select
+files and folders from trusted paths whose content and origin have been
+verified by you. The app checks that the path exists, but that check is no
+substitute for your review — no additional trust policy or permissions are
+applied.
 
-## Módulo Principal: `main.py`
+## Main module: `main.py`
 
-- **`_SCHEMA_SQL`** (en `utils.py`): SQL para crear tablas si faltan.
-- **`init_db()`**: arranca BD y activa foreign keys.
-- **`excepthook()`**: captura excepciones globales y las manda al logger.
-- **`ProcWorker(QObject)`**: ejecuta comandos/procesos en background.
+- **`_SCHEMA_SQL`** (in `utils.py`): SQL that creates missing tables.
+- **`init_db()`**: boots the DB and enables foreign keys.
+- **`excepthook()`**: catches global exceptions and sends them to the logger.
+- **`ProcWorker(QObject)`**: runs commands/processes in the background.
 - **`MainWindow`**:
-   - `_switch(self, idx)`: cambia de sección.
-   - `_run_generic(self, path, lang)`: ejecuta scripts/apps locales.
-   - `_open_folder(self, path)`: abre carpetas.
+   - `_switch(self, idx)`: switches section.
+   - `_run_generic(self, path, lang)`: runs local scripts/apps.
+   - `_open_folder(self, path)`: opens folders.
 
 
-## Utilidades Comunes: `utils.py`
+## Common utilities: `utils.py`
 
-- **Rutas**: `BASE_DIR`, `DB_PATH`, `LOG_PATH`, etc.
-- **BD**: `get_conn()`, `fetchone(sql, args)`, `fetchall()`, `exec_sql()`.
-- **Files**: `get_relative_path_or_copy(src)`, manejo de assets.
+- **Paths**: `BASE_DIR`, `DB_PATH`, `LOG_PATH`, etc.
+- **DB**: `get_conn()`, `fetchone(sql, args)`, `fetchall()`, `exec_sql()`.
+- **Files**: `get_relative_path_or_copy(src)`, asset handling.
 - **UI**: `clear_layout()`, `RepoCard`, `AssetDialog`, `TextEditorDialog`.
-- **Iconos**: funciones locales de `diary_section.py` y `documentation_section.py`.
+- **Icons**: local helpers in `diary_section.py` and `documentation_section.py`.
 
 
-## Sistema de Logging
+## Logging system
 
-Todos los errores (scripts, apps, excepciones) se registran en **`logs/techcodex.log`**, ubicando las entradas más recientes al principio:
+Every error (scripts, apps, exceptions) is recorded in
+**`logs/techcodex.log`**, newest entries at the top:
 
 ```text
 ------- 26/04/2025 00:54 -------
@@ -142,64 +145,64 @@ Traceback (most recent call last):
 sqlite3.OperationalError: unable to open database file
 ```
 
-- **Formato**: `------- DD/MM/YYYY HH:MM -------` en header.
-- **Categoría**: `[Python]`, `[Script]`, `[App]`, `[Exception]`, etc.
-- **Orden**: nueva entrada insertada arriba.
-- **Rotación**: (futura mejora) mantener X MB o X líneas; por ahora sin límite.
+- **Format**: `------- DD/MM/YYYY HH:MM -------` header.
+- **Category**: `[Python]`, `[Script]`, `[App]`, `[Exception]`, etc.
+- **Order**: new entries inserted at the top.
+- **Rotation**: (future improvement) cap by size or lines; currently unlimited.
 
-## Secciones (`sections/`)
+## Sections (`sections/`)
 
-### Noticias (`news_section.py`)
-- Configuración de feeds en `NewsCfg`.
-- `RSSFetcher(QThread)`: descargas asíncronas.
-- `NewsCard`: título, resumen, botones **Ver**, **Leída**, **Favorito**.
-- Filtros: origen, texto, fecha, favoritos.
+### News (`news_section.py`)
+- Feed configuration in `NewsCfg`.
+- `RSSFetcher(QThread)`: async downloads.
+- `NewsCard`: title, summary, buttons **Ver**, **Leída**, **Favorito**.
+- Filters: source, text, date, favorites.
 
-### Consejo del Día (`tips_section.py`)
-- Gestión en BD de consejos con **categoría**, **nivel**.
-- Navegación: aleatorio o secuencial.
-- Atajos: **F** (favorito), **→** (siguiente), **Esc**.
+### Tip of the day (`tips_section.py`)
+- Tips stored in the DB with **category** and **level**.
+- Navigation: random or sequential.
+- Shortcuts: **F** (favorite), **→** (next), **Esc**.
 
-### Repositorio de Comandos (`commands_section.py`)
-- CRUD de comandos shell con ejemplos.
-- Filtros: texto, estado, favoritos, categoría, lenguaje.
-- Botones de marcado rápido.
+### Command repository (`commands_section.py`)
+- CRUD for shell commands with examples.
+- Filters: text, status, favorites, category, language.
+- Quick-flag buttons.
 
-### Repositorio de Scripts (`scripts_section.py`)
-- Añadir/editar/recargar scripts.
-- Copia automática a `scripts/`.
-- Ejecución oculta (`CREATE_NO_WINDOW`) o en nueva consola.
+### Script repository (`scripts_section.py`)
+- Add/edit/reload scripts.
+- Automatic copy into `scripts/`.
+- Hidden execution (`CREATE_NO_WINDOW`) or in a new console.
 
-### Repositorio de Apps (`apps_section.py`)
-- Igual que scripts, en `app/`.
-- Mapeo extensiones a categorías.
-- Ejecución silenciosa o visible.
+### App repository (`apps_section.py`)
+- Same as scripts, under `app/`.
+- Extension-to-category mapping.
+- Silent or visible execution.
 
-### Diario de Desarrollo (`diary_section.py`)
-- CRUD de proyectos y entradas WYSIWYG.
-- Estados: **En curso**, **Pausado**, **Finalizado**.
-- Iconos por diario con `_copy_icon()` y `_pixmap()`.
+### Development diary (`diary_section.py`)
+- CRUD for projects and WYSIWYG entries.
+- Statuses: **En curso**, **Pausado**, **Finalizado**.
+- Per-diary icons with `_copy_icon()` and `_pixmap()`.
 
-### Diario de Incidencias (`incidences_section.py`)
-- CRUD con **prioridad** y **categoría**.
-- Filtros y marcado de **resueltas**.
+### Incident diary (`incidences_section.py`)
+- CRUD with **priority** and **category**.
+- Filters and marking of **resolved** incidents.
 
-### Documentación (`documentation_section.py`)
-- Categorías en BD (`CategorySettings`).
-- Grid interactivo de carpetas y enlaces.
-- CRUD de archivos locales y URLs.
-- Editor HTML WYSIWYG (`FileCreatorDialog`).
+### Documentation (`documentation_section.py`)
+- Categories stored in the DB (`CategorySettings`).
+- Interactive grid of folders and links.
+- CRUD for local files and URLs.
+- WYSIWYG HTML editor (`FileCreatorDialog`).
 
 
-## Base de Datos
+## Database
 
-- **SQLite** con foreign keys activadas.
-- Tablas:
+- **SQLite** with foreign keys enabled.
+- Tables:
   - `DiariosDesarrollo`, `EntradasDesarrollo`, `Incidencias`.
   - `Consejos`, `Comandos`, `Scripts`, `Aplicaciones`.
   - `Documentacion`, `CategorySettings`.
 
-## Esquema de la Base de Datos
+## Database schema
 
 ```sql
 CREATE TABLE IF NOT EXISTS DiariosDesarrollo (
@@ -211,38 +214,39 @@ CREATE TABLE IF NOT EXISTS DiariosDesarrollo (
     estado TEXT DEFAULT 'En curso',
     icono  TEXT
 );
--- Resto de tablas definidas en utils._SCHEMA_SQL
+-- Remaining tables defined in utils._SCHEMA_SQL
 ```
-## Gestión de Assets y Rutas
+## Asset and path handling
 
-- Rutas relativas desde `BASE_DIR`.
-- `get_relative_path_or_copy()` copia recursos externos a carpetas internas.
-- Carpeta `icons/<slug>/...` para iconos.
+- Relative paths from `BASE_DIR`.
+- `get_relative_path_or_copy()` copies external assets into internal folders.
+- Folder `icons/<slug>/...` for icons.
 
-## Estilo y Temas
+## Style and themes
 
-- Tema Qt **Fusion**.
-- Hoja de estilos en `ui/estilos.qss`.
-- Sombreados (`QGraphicsDropShadowEffect`) y paletas coherentes.
-
-
-## Manejo de Iconos
-
-1. Selección con diálogo “…”
-2. Validación: `.png`, `.jpg`, `.ico` y ≤2 MB.
-3. Copia a `icons/<slug>/...` si viene de fuera.
-4. Registro en BD y cache de pixmap a 80×80.
+- Qt **Fusion** style.
+- Stylesheet in `ui/estilos.qss`.
+- Drop shadows (`QGraphicsDropShadowEffect`) and a coherent palette.
 
 
-## Expansión y Personalización
+## Icon handling
 
-- Añadir sección: crear módulo en `sections/`, registrar en `main.py`.
-- Ampliar BD: editar `_SCHEMA_SQL` en `utils.py` y migrar.
-- Ajustar QSS en `ui/estilos.qss` y feeds en `news_section.py`.
+1. Selection via the “…” dialog
+2. Validation: `.png`, `.jpg`, `.ico`, ≤2 MB.
+3. Copy to `icons/<slug>/...` when coming from outside.
+4. Stored in the DB and pixmap cache at 80×80.
+
+
+## Extension and customization
+
+- Add a section: create a module in `sections/`, register it in `main.py`.
+- Extend the DB: edit `_SCHEMA_SQL` in `utils.py` and migrate.
+- Tweak QSS in `ui/estilos.qss` and feeds in `news_section.py`.
+
+Next candidates when the app needs them: automatic database backup/restore
+and PDF/CSV report export from the different sections.
 
 ---
 
-## Roadmap
-
-- [ ] Backup y restore automático de la base de datos.
-- [ ] Exportación de informes a PDF / CSV desde las distintas secciones.
+UI labels quoted above (**Ver**, **En curso**, …) appear as the interface
+shows them, which is in Spanish.
