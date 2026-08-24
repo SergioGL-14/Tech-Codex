@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-sections/diary_section.py · Diario de Desarrollo
-Versión refactor 26-abr-2025 (con rutas de carpetas)
+sections/diary_section.py - Development diary
+Refactor version 26-Apr-2025 (with folder paths)
 """
 
 from __future__ import annotations
@@ -93,9 +93,9 @@ def _pixmap(rel: str) -> Optional[QPixmap]:
 
 
 def _ensure_columns() -> None:
-    """Añade columnas nuevas a DiariosDesarrollo si no existen aún."""
+    """Adds new columns to DiariosDesarrollo if they do not exist yet."""
     with sqlite3.connect(DB_PATH) as c:
-        # Activar foreign keys por si acaso
+        # Enable foreign keys just in case
         c.execute("PRAGMA foreign_keys = ON;")
         cur = c.cursor()
         for col, ddl in (
@@ -107,11 +107,11 @@ def _ensure_columns() -> None:
             try:
                 cur.execute(f"ALTER TABLE DiariosDesarrollo ADD COLUMN {col} {ddl}")
             except sqlite3.OperationalError:
-                # La columna ya existe
+                # Column already exists
                 pass
         c.commit()
 
-# Ejecutamos la migración al cargar el módulo
+# Migration runs when the module loads
 _ensure_columns()
 
 
@@ -155,17 +155,17 @@ class DiarioMetaDialog(_DlgBase):
         self.setWindowTitle("Editar características")
         self.resize(440, 240)
         form = QFormLayout(self)
-        # Lenguaje y estado
+        # Language and status
         self.cmb_lang = QComboBox(); self.cmb_lang.addItems(LANGUAGES)
         self.cmb_lang.setCurrentText(lenguaje or "")
         self.cmb_state= QComboBox(); self.cmb_state.addItems(STATES)
         self.cmb_state.setCurrentText(estado or STATES[0])
-        # Icono
+        # Icon
         self.lbl_icon = QLabel(Path(icono).name if icono else "(sin icono)")
         self._icon_path = icono
         btn_browse = QPushButton("…"); btn_browse.clicked.connect(self._browse)
         h1 = QHBoxLayout(); h1.addWidget(self.lbl_icon); h1.addWidget(btn_browse)
-        # Carpeta
+        # Folder
         self.lbl_ruta = QLabel(Path(ruta).name if ruta else "(sin carpeta)")
         self._ruta_path = ruta
         btn_ruta = QPushButton("…"); btn_ruta.clicked.connect(self._browse_ruta)
@@ -230,7 +230,7 @@ class DiarySection(QWidget):
 
     def _build_index(self) -> None:
         clear_layout(self._layout)
-        # ── barra de filtros ──
+        # filter bar
         bar = QHBoxLayout()
         self.txt_find  = QLineEdit(placeholderText="Buscar…")
         self.cmb_lang  = QComboBox(); self.cmb_lang.addItem("Todos")
@@ -240,7 +240,7 @@ class DiarySection(QWidget):
         bar.addStretch()
         self._layout.addLayout(bar)
 
-        # ── área scroll ──
+        # scroll area
         self.scroll = QScrollArea()
         self.scroll.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         self.scroll.setWidgetResizable(True)
@@ -290,27 +290,27 @@ class DiarySection(QWidget):
         self.grid.setRowStretch(rr + 1, 1)
 
     def _make_card(self, d: dict[str, Any]) -> QGroupBox:
-        # Creamos un QGroupBox
+        # Create a QGroupBox
         w = QGroupBox()
         w.setObjectName("cardBox")
         w.setFixedSize(CARD, CARD)
 
-        # Layout vertical sin márgenes extra
+        # Vertical layout with no extra margins
         v = QVBoxLayout(w)
         v.setContentsMargins(4, 4, 4, 4)
         v.setSpacing(4)
 
-        # 1) TÍTULO: arriba, en negrita y blanco
+        # 1) TITLE: on top, bold and white
         ttl = QLabel(d["titulo"])
         ttl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         ttl.setWordWrap(True)
         ttl.setStyleSheet("color: #eee; font-weight: bold; background: transparent;")
         v.addWidget(ttl)
 
-        # pequeño espacio extra tras el título
+        # small extra gap after the title
         v.addSpacing(2)
 
-        # 2) ICONO: centrado y limpio
+        # 2) ICON: centered and clean
         pm = _pixmap(d.get("icono", ""))
         if pm:
             img = QLabel()
@@ -319,13 +319,13 @@ class DiarySection(QWidget):
             img.setStyleSheet("border: none; background: transparent;")
             v.addWidget(img, alignment=Qt.AlignmentFlag.AlignCenter)
         else:
-            # si no hay icono, reservamos espacio aproximado
+            # no icon: reserve approximate space
             v.addSpacing(80)
 
-        # 3) Stretch para empujar el estado hacia el fondo
+        # 3) Stretch pushes the status to the bottom
         v.addStretch()
 
-        # 4) ESTADO: texto pegado al borde inferior, verde si Finalizado
+        # 4) STATUS: text flush with the bottom edge, green when Finalizado
         st = QLabel(d["estado"])
         st.setAlignment(Qt.AlignmentFlag.AlignCenter)
         st.setStyleSheet(
@@ -335,7 +335,7 @@ class DiarySection(QWidget):
         )
         v.addWidget(st)
 
-        # Click sobre la tarjeta abre el diario
+        # Clicking the card opens the diary
         w.mousePressEvent = lambda _, dia=d: self._open_diary(dia)  # type: ignore
         return w
 
@@ -361,7 +361,7 @@ class DiarySection(QWidget):
         self._diario = dia
         self._desc   = True
 
-        # ── barra superior ──
+        # top bar
         top = QHBoxLayout()
         btn_back = QPushButton("◀ Volver"); btn_back.clicked.connect(self._build_index)
         self.lbl_order = QLabel(); self.lbl_order.setStyleSheet("color: white; font-size: 14px;")
@@ -376,7 +376,7 @@ class DiarySection(QWidget):
         self._layout.addLayout(top)
         self._update_order_icon()
 
-        # ── cabecera ──
+        # header
         h = QLabel(f"📘 {dia['titulo']}"); h.setStyleSheet("font-size:22px;font-weight:bold;")
         self._layout.addWidget(h)
         if dia.get("descripcion"):
@@ -385,9 +385,9 @@ class DiarySection(QWidget):
         meta.setStyleSheet("color:#999;font-size:11px;")
         self._layout.addWidget(meta)
 
-        # ── filtros entradas ──
+        # entry filters
         fbar = QHBoxLayout()
-        # Botón Abrir Carpeta
+        # Open Folder button
         if dia.get("ruta"):
             btn_open = QPushButton("📂 Abrir carpeta")
             btn_open.clicked.connect(lambda _, p=dia["ruta"]: QDesktopServices.openUrl(QUrl.fromLocalFile(p)))
@@ -405,7 +405,7 @@ class DiarySection(QWidget):
         fbar.addWidget(btn_new)
         self._layout.addLayout(fbar)
 
-        # ── contenedor entradas ──
+        # entries container
         self.entries_box = QVBoxLayout()
         self._layout.addLayout(self.entries_box); self._layout.addStretch()
         self._draw_entries()

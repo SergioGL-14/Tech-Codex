@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-The Tech Codex — Lanzador principal
-Autor: Sergio · Actualizado 2025-04-25
+The Tech Codex — Main launcher
+Author: Sergio · Updated 2025-04-25
 """
 
 from __future__ import annotations
 
-# 1) Inicializar Qt WebEngine (importación temprana)
+# 1) Initialize Qt WebEngine (early import)
 from PyQt6 import QtWebEngineWidgets
 
 import os
@@ -24,14 +24,14 @@ from PyQt6.QtWidgets import (
     QPlainTextEdit, QSizePolicy, QVBoxLayout, QWidget,
 )
 
-# ── utilidades y rutas ──────────────────────────────────────────────
+# ── utilities and paths ──────────────────────────────────────────────
 from utils import (
     resource_path,
     DB_PATH, SCRIPTS_DIR, APPS_DIR, APP_EXT,
     clear_layout, init_db, log_execution_error
 )
 
-# ── secciones ───────────────────────────────────────────────────────
+# ── sections ───────────────────────────────────────────────────────
 from sections.news_section          import NewsSection
 from sections.tips_section          import TipsSection
 from sections.commands_section      import CommandsSection
@@ -42,7 +42,7 @@ from sections.incidences_section    import IncidenciasSection
 from sections.documentation_section import DocumentationSection
 from sections.about_section         import AboutSection
 
-# ── Help para capturar excepciones no atrapadas ─────────────────────
+# ── Global hook for uncaught exceptions ─────────────────────
 def excepthook(exc_type, exc_value, exc_tb):
     msg = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
     print(msg, file=sys.stderr)
@@ -50,7 +50,7 @@ def excepthook(exc_type, exc_value, exc_tb):
     QMessageBox.critical(None, "Error inesperado", msg)
     sys.exit(1)
 
-# ── Worker para procesos externos ───────────────────────────────────
+# ── Worker for external processes ───────────────────────────────────
 class ProcWorker(QObject):
     finished = pyqtSignal(str)
 
@@ -87,7 +87,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("The Tech Codex")
         self.resize(1280, 830)
 
-        # Icono de la aplicación
+        # Application icon
         ico = resource_path("icons", "app_icon.ico")
         if ico.exists():
             self.setWindowIcon(QIcon(str(ico)))
@@ -96,7 +96,7 @@ class MainWindow(QMainWindow):
         root = QHBoxLayout(central)
         self.setCentralWidget(central)
 
-        # menú lateral
+        # side menu
         self.menu = QListWidget()
         self.menu.setMinimumWidth(200)
         self.menu.setSpacing(3)
@@ -107,7 +107,7 @@ class MainWindow(QMainWindow):
         self._populate_menu()
         self.menu.currentRowChanged.connect(self._switch)
 
-        # contenedor central
+        # central container
         self.stack = QWidget()
         self.stack_lay = QVBoxLayout(self.stack)
         self.stack_lay.setContentsMargins(20, 20, 20, 20)
@@ -181,13 +181,13 @@ class MainWindow(QMainWindow):
 
         cls = mapping.get(idx)
         if cls:
-            # Repositorio de Apps necesita dos parámetros
+            # AppsSection needs two parameters
             if cls is AppsSection:
                 widget = cls(APPS_DIR, APP_EXT)
-            # Secciones sin argumentos
+            # Sections without arguments
             elif cls in (DocumentationSection, AboutSection, NewsSection):
                 widget = cls()
-            # El resto de secciones toman la BD como parámetro
+            # Remaining sections take the DB path as parameter
             else:
                 widget = cls(DB_PATH)
 

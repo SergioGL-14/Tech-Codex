@@ -30,7 +30,7 @@ class EditorSection(QWidget):
         self.text_edit = QTextEdit()
         layout.addWidget(self.text_edit)
 
-        # Barra de herramientas
+        # Toolbar
         toolbar = QHBoxLayout()
         layout.addLayout(toolbar)
 
@@ -136,7 +136,7 @@ class EditorSection(QWidget):
 
 
 # ---------------------------- #
-# 🌐 Función accesible externa #
+# Externally callable function #
 # ---------------------------- #
 def open_editor(file_path):
     from PyQt6.QtWidgets import QApplication

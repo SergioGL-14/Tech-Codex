@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-sections/scripts_section.py  ·  Repositorio de Scripts
-Versión refactorizada 25-abr-2025
+sections/scripts_section.py  -  Script repository
+Refactored version 25-Apr-2025
 """
 from __future__ import annotations
 
@@ -85,7 +85,7 @@ class ScriptsSection(QWidget):
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
 
-        # — Barra de búsqueda y acciones —
+        # Search and actions bar
         bar = QHBoxLayout()
         self.txt_search = QLineEdit(placeholderText="Buscar…")
         btn_add    = QPushButton("➕ Añadir")
@@ -95,7 +95,7 @@ class ScriptsSection(QWidget):
         bar.addWidget(btn_add);    bar.addWidget(btn_reload)
         root.addLayout(bar)
 
-        # — Área scroll con tarjetas —
+        # Scroll area with cards
         scroll = QScrollArea(widgetResizable=True)
         container = QWidget()
         self.lay_cards = QVBoxLayout(container)
@@ -105,7 +105,7 @@ class ScriptsSection(QWidget):
         scroll.setWidget(container)
         root.addWidget(scroll)
 
-        # señales
+        # signals
         self.txt_search.textChanged.connect(self._on_search)
         btn_add.clicked.connect(self._on_add)
         btn_reload.clicked.connect(self._on_reload)
@@ -151,7 +151,7 @@ class ScriptsSection(QWidget):
             cur = conn.cursor()
             for item in SCRIPTS_DIR.iterdir():
                 if item.is_dir():
-                    # busca <dir>/<dir>.<ext>
+                    # look for <dir>/<dir>.<ext>
                     for ext, lang in SCRIPT_EXT.items():
                         main = item / f"{item.name}{ext}"
                         if main.exists():
@@ -182,7 +182,7 @@ class ScriptsSection(QWidget):
         self._refresh_cards(self.txt_search.text())
 
     def _refresh_cards(self, filtro: str) -> None:
-        # conserva stretch
+        # keep stretch
         stretch = self.lay_cards.takeAt(self.lay_cards.count()-1)
         clear_layout(self.lay_cards)
         self.lay_cards.addItem(stretch)
@@ -196,7 +196,7 @@ class ScriptsSection(QWidget):
 
             card = RepoCard(r["nombre"])
 
-            # izquierda: descripción / editor
+            # left: description / editor
             left = QWidget(); ll = QVBoxLayout(left)
             desc = r["descripcion"] or ""
             if not desc.strip() or desc.startswith("Sin descripción"):
@@ -208,7 +208,7 @@ class ScriptsSection(QWidget):
                 lbl = QLabel(desc); lbl.setWordWrap(True); ll.addWidget(lbl)
             card.add_left(left)
 
-            # derecha: editar / abrir / ejecutar
+            # right: edit / open / run
             right = QWidget(); rl = QVBoxLayout(right)
             btn_e = QPushButton("✏️ Editar")
             btn_e.clicked.connect(partial(self._edit, r, filtro))

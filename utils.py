@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 utils.py · The Tech Codex
-Helpers de rutas, base de datos, componentes UI y utilidades transversales.
+Helpers for paths, database, UI components and cross-cutting utilities.
 """
 
 from __future__ import annotations
@@ -38,29 +38,29 @@ BASE_DIR = Path(__file__).resolve().parent
 
 def resource_path(*relative_parts: str) -> Path:
     """
-    Devuelve la ruta absoluta a un recurso empaquetado.
-    - En bundle PyInstaller usa sys._MEIPASS.
-    - En desarrollo usa la carpeta donde está este mismo utils.py.
+    Returns the absolute path to a bundled resource.
+    - In a PyInstaller bundle it uses sys._MEIPASS.
+    - In development it uses the folder where this utils.py lives.
     """
     if getattr(sys, "frozen", False):
         base = Path(sys._MEIPASS)
     else:
-        # usamos directamente la carpeta de este utils.py
+        # use this utils.py's own folder directly
         base = Path(__file__).resolve().parent
     return base.joinpath(*relative_parts)
 
-# ╔═════════════════════  Rutas básicas  ═════════════════════╗
+# ╔═════════════════════  Basic paths  ═════════════════════╗
 
-# ── Directorio de datos persistentes (BD, logs, config) ──────
+# ── Persistent data directory (DB, logs, config) ──────
 if getattr(sys, "frozen", False):
-    # Cuando está empaquetado con PyInstaller
+    # When packaged with PyInstaller
     if sys.platform.startswith("win"):
         DATA_DIR = Path(os.getenv("LOCALAPPDATA",
                                    Path.home() / "AppData" / "Local")) / "TheTechCodex"
     else:
         DATA_DIR = Path.home() / ".local" / "share" / "TheTechCodex"
 else:
-    # En desarrollo, usamos la carpeta del proyecto
+    # In development, we use the project folder
     DATA_DIR = BASE_DIR
 
 DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -79,7 +79,7 @@ LOG_DIR  = DATA_DIR / "logs"; LOG_DIR.mkdir(exist_ok=True)
 LOG_PATH = LOG_DIR / "techcodex.log"
 
 
-# ╔═══════════════  Esquema SQL (migración simple)  ═════════════════╗
+# ╔═══════════════  SQL schema (simple migration)  ═════════════════╗
 _SCHEMA_SQL: str = """
 CREATE TABLE IF NOT EXISTS DiariosDesarrollo (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -154,16 +154,16 @@ CREATE TABLE IF NOT EXISTS Documentacion (
 """
 
 def init_db() -> None:
-    """Inicializa (o migra) la base de datos."""
+    """Initializes (or migrates) the database."""
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute("PRAGMA foreign_keys = ON;")
         conn.executescript(_SCHEMA_SQL)
         conn.commit()
 
-# ╔═══════════════════  Acceso a datos  ════════════════════════════╗
+# ╔═══════════════════  Data access  ════════════════════════════╗
 @contextmanager
 def get_conn() -> Iterator[sqlite3.Connection]:
-    """Contexto seguro con FK y WAL; row_factory → dict."""
+    """Safe context with FK and WAL; row_factory → dict."""
     conn = sqlite3.connect(DB_PATH)
     conn.execute("PRAGMA foreign_keys = ON;")
     conn.execute("PRAGMA journal_mode=WAL;")
@@ -187,9 +187,9 @@ def exec_sql(query: str, params: Sequence[Any] | None = None) -> None:
         conn.execute(query, params or [])
         conn.commit()
 
-# ╔══════════════════  Helpers de layout  ══════════════════════════╗
+# ╔══════════════════  Layout helpers  ══════════════════════════╗
 def clear_layout(layout) -> None:
-    """Vacía recursivamente un QLayout (widgets, sub-layouts y spacers)."""
+    """Recursively empties a QLayout (widgets, sub-layouts and spacers)."""
     while layout.count():
         item = layout.takeAt(0)
         if item.layout():
@@ -200,10 +200,10 @@ def clear_layout(layout) -> None:
         elif isinstance(item, QSpacerItem):
             pass
 
-# ╔══════════════════  Gestión de archivos  ════════════════════════╗
+# ╔══════════════════  File management  ════════════════════════╗
 def get_relative_path_or_copy(src: str, base: Path, *, allow_copy: bool = False) -> Optional[str]:
     """
-    Si *src* ya está dentro de *base* → devuelve ruta relativa.
+    If *src* is already inside *base* → returns the relative path.
     Si no y `allow_copy=True` → copia a *base* y devuelve nueva ruta relativa.
     Devuelve `None` si falla.
     """
@@ -223,13 +223,13 @@ def get_relative_path_or_copy(src: str, base: Path, *, allow_copy: bool = False)
         except (OSError, shutil.Error):
             return None
 
-# ╔══════════════════════  Logging de errores  ═════════════════════╗        
+# ╔══════════════════════  Error logging  ═════════════════════╗        
 def log_execution_error(error_msg: str, file_path: str, lenguaje: str = "") -> None:
     """
-    Registra un error de ejecución en logs/techcodex.log con formato:
+    Logs an execution error to logs/techcodex.log with format:
     ------- DD/MM/YYYY HH:MM -------
-    [Tipo/Lenguaje]: Ruta del archivo/script
-    Descripción del error
+    [Type/Language]: Path of the file/script
+    Error description
     """
     from datetime import datetime
 
@@ -249,9 +249,9 @@ def log_execution_error(error_msg: str, file_path: str, lenguaje: str = "") -> N
     except Exception as e:
         print(f"ERROR al escribir en el log: {e}")
 
-# ╔═══════════════  Componentes UI genéricos  ══════════════════════╗
+# ╔═══════════════  Generic UI components  ══════════════════════╗
 class RepoCard(QGroupBox):
-    """Tarjeta horizontal con sombra; usada en Scripts / Apps."""
+    """Horizontal card with shadow; used in Scripts / Apps."""
 
     def __init__(self, title: str = "") -> None:
         super().__init__(title)
@@ -268,8 +268,8 @@ class RepoCard(QGroupBox):
 
 class AssetDialog(QDialog):
     """
-    Alta / edición de un «asset» (Script o Aplicación).
-    Campos: nombre, descripción, ruta (selector…).
+    Create / edit an asset (Script or Application).
+    Fields: name, description, path (browse button).
     """
 
     def __init__(
@@ -291,7 +291,7 @@ class AssetDialog(QDialog):
         self.txt_nombre = QLineEdit(title)
         self.txt_desc   = QPlainTextEdit(descripcion, maximumHeight=80)
 
-        # campo ruta + botón «…»
+        # path field + browse button
         h = QHBoxLayout()
         self.txt_ruta = QLineEdit(ruta)
         btn_browse = QPushButton("…")

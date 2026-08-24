@@ -8,7 +8,7 @@
 4. [Architecture and data flow](#architecture-and-data-flow)
 5. [Local execution and trusted paths](#local-execution-and-trusted-paths)
 6. [Main module: `main.py`](#main-module-mainpy)
-7. [Common utilities: `utils.py`](#common-utilitites-utilspy)
+7. [Common utilities: `utils.py`](#common-utilities-utilspy)
 8. [Logging system](#logging-system)
 9. [Sections (`sections/`)](#sections-sections)
    - [News (`news_section.py`)](#news-news_sectionpy)

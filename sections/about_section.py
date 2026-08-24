@@ -11,31 +11,31 @@ class AboutSection(QWidget):
         super().__init__()
         lay = QVBoxLayout(self)
 
-        # Crear QTextBrowser
+        # Create QTextBrowser
         browser = QTextBrowser()
-        # Cargar el markdown usando resource_path para apuntar al bundle o al desarrollo
+        # Load the markdown via resource_path, pointing at the bundle or the dev tree
         md_file = resource_path("ABOUT.md")
         md = Path(md_file).read_text(encoding="utf-8")
         browser.setMarkdown(md)
 
-        # 1) No abrir internamente los links por defecto
+        # 1) Do not open links internally by default
         browser.setOpenLinks(False)
-        # 2) Pero sí abrir externamente los http(s) automáticos
+        # 2) But do open automatic http(s) links externally
         browser.setOpenExternalLinks(True)
-        # 3) Conectar el clic en anclas internas
+        # 3) Hook clicks on internal anchors
         browser.anchorClicked.connect(self._on_anchor)
 
         lay.addWidget(browser)
         self._browser = browser
 
     def _on_anchor(self, url: QUrl) -> None:
-        # Si es un link con fragmento "#algo", QUrl.toString() será "#algo"
+        # A link with fragment "#something" makes QUrl.toString() return "#something"
         frag = url.toString()
-        # Mover el scroll a esa ancla
-        # QTextBrowser espera sin el “#”
+        # Scroll to that anchor
+        # QTextBrowser expects it without the "#"
         if frag.startswith('#'):
             self._browser.scrollToAnchor(frag[1:])
         else:
-            # para enlaces externos (http://...) dejamos que el sistema los abra
+            # for external links (http://...) let the system open them
             import webbrowser
             webbrowser.open(frag)

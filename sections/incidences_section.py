@@ -73,7 +73,7 @@ class IncidenciasSection(QWidget):
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
 
-        # filtros
+        # filters
         bar = QHBoxLayout()
         self.txt_bus    = QLineEdit(placeholderText="Buscar…")
         self.cmb_estado = QComboBox(); self.cmb_estado.addItems(["Todos","Pendiente","Resuelto"])
@@ -85,7 +85,7 @@ class IncidenciasSection(QWidget):
         bar.addStretch()
         root.addLayout(bar)
 
-        # área scroll
+        # scroll area
         scroll = QScrollArea(widgetResizable=True)
         container = QWidget()
         self.vbox = QVBoxLayout(container)
@@ -93,12 +93,12 @@ class IncidenciasSection(QWidget):
         scroll.setWidget(container)
         root.addWidget(scroll, 1)
 
-        # botón nuevo
+        # new button
         btn_new = QPushButton("➕ Nueva incidencia")
         btn_new.clicked.connect(self._new)
         root.addWidget(btn_new)
 
-        # señales filtro
+        # filter signals
         self.txt_bus.textChanged.connect(self._refresh)
         self.cmb_estado.currentIndexChanged.connect(self._refresh)
         self.cmb_prio.currentIndexChanged.connect(self._refresh)
@@ -113,7 +113,7 @@ class IncidenciasSection(QWidget):
         pr  = self.cmb_prio.currentText()
         cat = self.cmb_cat.currentText()
 
-        # prioridad para ordenar
+        # priority for sorting
         order = {"Alta":0,"Media":1,"Baja":2}
         rows = sorted(fetchall("SELECT * FROM Incidencias"), 
                       key=lambda r: (r["estado"]!="Pendiente", order.get(r["prioridad"],3)))
@@ -129,7 +129,7 @@ class IncidenciasSection(QWidget):
             card.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=8,xOffset=1,yOffset=1))
             h = QHBoxLayout(card)
 
-            # detalle
+            # detail
             info = QWidget(); il = QVBoxLayout(info)
             fecha = datetime.fromisoformat(inc["fecha"]).strftime("%d/%m/%Y %H:%M")
             il.addWidget(QLabel(f"Fecha: {fecha}"))
@@ -140,7 +140,7 @@ class IncidenciasSection(QWidget):
             il.addWidget(QLabel(f"Categoría: {inc['categoria']}"))
             h.addWidget(info, 4)
 
-            # acciones
+            # actions
             act = QWidget(); al = QVBoxLayout(act)
             btn_v = QPushButton("🔍 Ver / Editar")
             btn_v.clicked.connect(lambda _, i=inc: self._open(i))

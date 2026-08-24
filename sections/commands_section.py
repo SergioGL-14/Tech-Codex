@@ -1,6 +1,6 @@
 # sections/commands_section.py
-# Repositorio de Comandos – filtros, CRUD y toggle Aprendido / Favorito
-# Refactor 26-abr-2025
+# Command repository - filters, CRUD and Learned / Favorite toggle
+# Refactor 26-Apr-2025
 from __future__ import annotations
 
 from datetime import datetime
@@ -30,15 +30,15 @@ from PyQt6.QtWidgets import (
 
 from utils import clear_layout, exec_sql, fetchall, fetchone
 
-# ────────────────────────── Constantes ────────────────────────────
+# ────────────────────────── Constants ────────────────────────────
 BASE_CATEGORIES: List[str] = ["Red", "Sistema", "Eventos",
                               "Servicios", "Seguridad", "Otra"]
 BASE_LANGS: List[str]     = ["PowerShell", "CMD", "Bash", "Linux",
                               "Python", "Docker", "Git", "SQL", "Otro"]
 
-# ═════════════  Diálogo CRUD  ═════════════
+# ═════════════  CRUD dialog  ═════════════
 class ComandoDialog(QDialog):
-    """Diálogo para crear / editar comandos."""
+    """Dialog to create / edit commands."""
 
     def __init__(
         self,
@@ -57,13 +57,13 @@ class ComandoDialog(QDialog):
 
         form = QFormLayout(self)
 
-        # --- campos ---
+        # --- fields ---
         self.txt_titulo         = QLineEdit(titulo)
         self.txt_codigo         = QPlainTextEdit(codigo); self.txt_codigo.setMaximumHeight(150)
         self.cmb_cat:  QComboBox= QComboBox()
         self.cmb_lang: QComboBox= QComboBox()
 
-        # categorías
+        # categories
         for c in BASE_CATEGORIES + sorted(set(categorias or [])):
             if self.cmb_cat.findText(c) == -1:
                 self.cmb_cat.addItem(c)
@@ -72,7 +72,7 @@ class ComandoDialog(QDialog):
         if categoria:
             self.cmb_cat.setCurrentText(categoria)
 
-        # lenguajes
+        # languages
         for l in BASE_LANGS + sorted(set(lenguajes or [])):
             if self.cmb_lang.findText(l) == -1:
                 self.cmb_lang.addItem(l)
@@ -93,7 +93,7 @@ class ComandoDialog(QDialog):
         bb.rejected.connect(self.reject)
         form.addWidget(bb)
 
-    # --- datos resultantes ---
+    # --- resulting data ---
     def data(self) -> dict[str, str]:
         return dict(
             titulo    = self.txt_titulo.text().strip(),
@@ -102,7 +102,7 @@ class ComandoDialog(QDialog):
             lenguaje  = self.cmb_lang.currentText(),
         )
 
-# ═════════════  Sección principal  ═════════════
+# ═════════════  Main section  ═════════════
 class CommandsSection(QWidget):
     """Listado con filtros, CRUD y botones Aprendido / Favorito."""
 
@@ -118,7 +118,7 @@ class CommandsSection(QWidget):
     def _build_ui(self) -> None:
         v = QVBoxLayout(self)
 
-        # --- barra filtros ---
+        # --- filter bar ---
         bar = QHBoxLayout()
         self.txt_bus  = QLineEdit(placeholderText="Buscar…")
         self.cmb_cat  = QComboBox(); self.cmb_cat.addItem("Todas")
@@ -135,7 +135,7 @@ class CommandsSection(QWidget):
         bar.addStretch()
         v.addLayout(bar)
 
-        # --- lista + detalle ---
+        # --- list + detail ---
         h = QHBoxLayout()
         self.lst_cmds = QListWidget(minimumWidth=260)
         h.addWidget(self.lst_cmds, 1)
@@ -145,7 +145,7 @@ class CommandsSection(QWidget):
         h.addWidget(self.pnl_detail, 2)
         v.addLayout(h)
 
-        # --- botones globales ---
+        # --- global buttons ---
         btn_row   = QHBoxLayout()
         self.btn_state = QPushButton("❌ Pendiente")
         self.btn_fav   = QPushButton("☆ Favorito")
@@ -154,7 +154,7 @@ class CommandsSection(QWidget):
         btn_row.addWidget(self.btn_state); btn_row.addStretch(); btn_row.addWidget(self.btn_fav)
         self.pnl_lay.addLayout(btn_row)
 
-        # --- CRUD global ---
+        # --- global CRUD ---
         crud = QHBoxLayout()
         for txt, cb in (("Nuevo", self._new_cmd),
                         ("Editar", self._edit_cmd),
@@ -162,7 +162,7 @@ class CommandsSection(QWidget):
             b = QPushButton(txt); b.clicked.connect(cb); crud.addWidget(b)
         v.addLayout(crud)
 
-        # Señales de filtros / lista
+        # Filter / list signals
         self.txt_bus.textChanged.connect(self._filter_cmds)
         self.cmb_cat.currentIndexChanged.connect(self._filter_cmds)
         self.cmb_lang.currentIndexChanged.connect(self._filter_cmds)
@@ -171,7 +171,7 @@ class CommandsSection(QWidget):
         self.chkF.stateChanged.connect(self._filter_cmds)
         self.lst_cmds.itemClicked.connect(self._select_cmd)
 
-    # ───────────────────  filtros dinámicos  ──────────────────
+    # ───────────────────  dynamic filters  ──────────────────
     def _populate_filter_values(self) -> None:
         """Rellena combos con los valores presentes en BD (sin duplicados)."""
         cats  = {r["categoria_funcional"] for r in
@@ -219,7 +219,7 @@ class CommandsSection(QWidget):
             params,
         )
 
-        # mantener selección actual si sigue visible
+        # keep current selection if still visible
         keep_id   = self.current_cmd_id
         keep_index= 0
         self.lst_cmds.clear()
@@ -235,7 +235,7 @@ class CommandsSection(QWidget):
             self.lst_cmds.setCurrentRow(keep_index)
             self._select_cmd(self.lst_cmds.item(keep_index))
         else:
-            # limpia la parte superior
+            # clear the top part
             while self.pnl_lay.count() > 1:
                 w = self.pnl_lay.takeAt(0).widget()
                 if w: w.deleteLater()
@@ -350,7 +350,7 @@ class CommandsSection(QWidget):
                  (0 if row["favorito"] else 1, self.current_cmd_id))
         self._filter_cmds()
 
-    # ═════════════  Tarjeta detalle  ═════════════
+    # ═════════════  Detail card  ═════════════
     @staticmethod
     def _card(title: str, data: dict[str, Any]) -> QGroupBox:
         card = QGroupBox(title) if title else QGroupBox()

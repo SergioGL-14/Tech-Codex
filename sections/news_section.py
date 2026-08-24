@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS noticias(
 """
 
 def _ensure_db() -> None:
-    # Usa get_conn() para tener row_factory y WAL ya configurados
+    # Use get_conn() to get row_factory and WAL already configured
     with get_conn() as c:
         c.executescript(_CREATE_SQL)
 
@@ -168,7 +168,7 @@ class RSSFetcher(QThread):
 class NewsCard(QGroupBox):
     def __init__(self, row: sqlite3.Row, parent: QWidget | None = None):
         super().__init__(parent)
-        # guardamos estado en atributos mutables
+        # store state in mutable attributes
         self.news_id = row["id"]
         self._leido  = bool(row["leido"])
         self._fav    = bool(row["favorito"])
@@ -195,21 +195,21 @@ class NewsCard(QGroupBox):
             lbl.setWordWrap(True)
             v.addWidget(lbl)
 
-        # --- botones ---
+        # --- buttons ---
         h = QHBoxLayout()
-        # Ver embebido
+        # Embedded view
         b_view = QPushButton("🔍 Ver")
         b_view.clicked.connect(self._view)
         h.addWidget(b_view)
-        # Abrir en navegador
+        # Open in browser
         b_web = QPushButton("🌐 Navegador")
         b_web.clicked.connect(lambda: webbrowser.open(row["link"]))
         h.addWidget(b_web)
-        # Lectura toggle
+        # Read toggle
         self.btn_read = QPushButton("✔️ Leída" if self._leido else "❌ Leída")
         self.btn_read.clicked.connect(self._toggle_read)
         h.addWidget(self.btn_read)
-        # Favorito toggle
+        # Favorite toggle
         self.btn_fav = QPushButton("⭐ Favorito" if self._fav else "★ Marcar")
         self.btn_fav.clicked.connect(self._toggle_fav)
         h.addWidget(self.btn_fav)
@@ -236,7 +236,7 @@ class NewsCard(QGroupBox):
 class _BrowserDialog(QDialog):
     """Visor embebido con QWebEngineView."""
     def __init__(self, news_id: int, parent: QWidget | None = None):
-        # recargamos la fila para obtener el link y el título
+        # reload the row to get the link and the title
         row = db_fetch("SELECT titulo, link FROM noticias WHERE id=?", (news_id,))[0]
         super().__init__(parent)
         self.setWindowTitle(row["titulo"])
@@ -255,7 +255,7 @@ class _BrowserDialog(QDialog):
         web.load(QUrl(row["link"]))
         v.addWidget(web, 1)
 
-# ╔══════════════════════  Widget principal  ════════════════════════╗
+# ╔══════════════════════  Main widget  ════════════════════════╗
 class NewsSection(QWidget):
     def __init__(self):
         super().__init__()
@@ -263,7 +263,7 @@ class NewsSection(QWidget):
 
         root = QVBoxLayout(self)
 
-        # --- filtros ---
+        # --- filters ---
         f = QHBoxLayout()
         self.cmb_src = QComboBox(); self.cmb_src.addItem("Todas", None)
         for n, _ in CFG.FEEDS: 
@@ -282,7 +282,7 @@ class NewsSection(QWidget):
         f.addWidget(today)
         root.addLayout(f)
 
-        # --- cabecera + recarga ---
+        # --- header + reload ---
         h = QHBoxLayout()
         h.addWidget(QLabel("<b>📰 Noticias</b>")); h.addStretch()
         self.btn_reload = QPushButton("🔄 Recargar")
@@ -290,7 +290,7 @@ class NewsSection(QWidget):
         h.addWidget(self.btn_reload)
         root.addLayout(h)
 
-        # --- contenedor cards ---
+        # --- card container ---
         self.scroll = QScrollArea(widgetResizable=True)
         self.inner  = QWidget()
         self.cards  = QVBoxLayout(self.inner)
@@ -298,7 +298,7 @@ class NewsSection(QWidget):
         self.scroll.setWidget(self.inner)
         root.addWidget(self.scroll, 1)
 
-        # señales filtros
+        # filter signals
         for sig in (
             self.cmb_src.currentIndexChanged,
             self.txt.textChanged,
@@ -310,7 +310,7 @@ class NewsSection(QWidget):
 
         self._populate()
 
-        # timer auto-reload
+        # auto-reload timer
         self.timer = QTimer(self)
         self.timer.timeout.connect(self._auto_reload)
         self.timer.start(CFG.INTERVAL * 60 * 1000)
@@ -339,7 +339,7 @@ class NewsSection(QWidget):
             if fav and not r["favorito"]: continue
             self.cards.addWidget(NewsCard(r, self))
 
-    # ---------- recarga ---------- #
+    # ---------- reload ---------- #
     def _manual_reload(self) -> None:
         if self._fetcher: return
         self._start_fetch()

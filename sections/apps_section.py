@@ -1,7 +1,7 @@
 # sections/apps_section.py
-# Repositorio de Aplicaciones — búsqueda, CRUD, copia automática
-# y ejecución silenciosa (sin consola) en Windows)
-# Refactor 26-abr-2025
+# Application repository - search, CRUD, automatic copy
+# and silent execution (no console) on Windows)
+# Refactor 26-Apr-2025
 from __future__ import annotations
 
 import os
@@ -38,15 +38,15 @@ from utils import (
 __all__ = ["AppsSection"]
 
 
-# ═════════════  Sección Apps  ═════════════
+# ═════════════  Apps section  ═════════════
 class AppsSection(QWidget):
     """
-    Repositorio local de aplicaciones / script-apps.
+    Local repository of applications / script-apps.
 
-    • Todo se almacena con rutas **relativas** a ``self.base_dir`` → portabilidad  
-    • «Recargar» inspecciona ``self.base_dir`` y registra carpetas no listadas.  
-    • «Añadir» permite escoger un .exe / .ps1 / .bat / .py (u otra carpeta);
-      si está fuera del directorio de datos, se copia a ``self.base_dir``.
+    • Everything is stored with paths **relative** to ``self.base_dir`` for portability  
+    • Reload scans ``self.base_dir`` and registers unlisted folders.  
+    • Add lets you pick a .exe / .ps1 / .bat / .py file (or another folder);
+      if it lives outside the data directory, it gets copied to ``self.base_dir``.
     """
 
     def __init__(
@@ -64,7 +64,7 @@ class AppsSection(QWidget):
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
 
-        # ░░ barra superior
+        # top bar
         bar = QHBoxLayout()
         self.txt_search = QLineEdit(placeholderText="Buscar…")
         btn_add    = QPushButton("➕ Añadir")
@@ -75,7 +75,7 @@ class AppsSection(QWidget):
         bar.addWidget(btn_add); bar.addWidget(btn_reload)
         root.addLayout(bar)
 
-        # ░░ área de tarjetas
+        # card area
         self.scroll = QScrollArea(widgetResizable=True)
         self.container = QWidget()
         self.lay_cards = QVBoxLayout(self.container)
@@ -85,14 +85,14 @@ class AppsSection(QWidget):
         self.scroll.setWidget(self.container)
         root.addWidget(self.scroll)
 
-        # ░░ señales
+        # signals
         self.txt_search.textChanged.connect(lambda txt: self._refresh_cards(txt))
         btn_add.clicked.connect(self._on_add)
         btn_reload.clicked.connect(self._on_reload)
 
     def _refresh_cards(self, filtro: str) -> None:
         """Recarga tarjetas aplicando filtro por nombre."""
-        # mantener stretch final
+        # keep the trailing stretch
         stretch = self.lay_cards.takeAt(self.lay_cards.count() - 1)
         clear_layout(self.lay_cards)
         self.lay_cards.addItem(stretch)
@@ -104,7 +104,7 @@ class AppsSection(QWidget):
 
             card = RepoCard(row["nombre"])
 
-            # — izquierda: descripción editable —
+            # left: editable description
             left = QWidget(); ll = QVBoxLayout(left)
             desc = row["descripcion"] or ""
             if not desc.strip() or desc.startswith("Sin descripción"):
@@ -118,7 +118,7 @@ class AppsSection(QWidget):
                 lbl = QLabel(desc); lbl.setWordWrap(True); ll.addWidget(lbl)
             card.add_left(left)
 
-            # — derecha: acciones —
+            # right: actions
             right = QWidget(); rl = QVBoxLayout(right)
             btn_edit = QPushButton("✏️ Editar")
             btn_edit.clicked.connect(partial(self._on_edit, row, filtro))
@@ -137,7 +137,7 @@ class AppsSection(QWidget):
             rl.addWidget(btn_run)
 
             card.add_right(right)
-            # insertar antes del stretch
+            # insert before the stretch
             self.lay_cards.insertWidget(self.lay_cards.count() - 1, card)
 
     def _on_add(self) -> None:
@@ -152,7 +152,7 @@ class AppsSection(QWidget):
             QMessageBox.warning(self, "Ruta", "Archivo o carpeta no existe.")
             return
 
-        # copia dentro de self.base_dir si está fuera
+        # copy into self.base_dir when it lives outside
         rel = get_relative_path_or_copy(str(src), self.base_dir, allow_copy=True)
         if rel is None:
             QMessageBox.warning(self, "Error", "No se pudo copiar/relativizar la ruta.")
@@ -182,7 +182,7 @@ class AppsSection(QWidget):
             for folder in self.base_dir.iterdir():
                 if not folder.is_dir():
                     continue
-                # fichero principal = <folder>/<folder>.<ext>
+                # main file = <folder>/<folder>.<ext>
                 for ext, lang in self.ext_map.items():
                     main = folder / f"{folder.name}{ext}"
                     if main.exists():

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-TipsSection — Consejo del Día con filtros, favoritos y botones globales.
+TipsSection - Tip of the day with filters, favorites and global buttons.
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ from utils import clear_layout
 
 
 class TipsSection(QWidget):
-    """Consejo del Día – filtros arriba, tarjeta con metadatos y botones globales abajo."""
+    """Tip of the day - filters on top, card with metadata and global buttons at the bottom."""
 
     def __init__(self, db_path: Path):
         super().__init__()
@@ -35,7 +35,7 @@ class TipsSection(QWidget):
         root = QVBoxLayout(self)
         root.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        # ───────────── Barra de filtros ──────────────
+        # ───────────── Filter bar ──────────────
         filt_bar = QHBoxLayout()
         self.cmb_cat = QComboBox()
         self.cmb_level = QComboBox()
@@ -58,14 +58,14 @@ class TipsSection(QWidget):
         filt_bar.addStretch()
         root.addLayout(filt_bar)
 
-        # Eventos filtros
+        # Filter events
         self.cmb_cat.currentIndexChanged.connect(self._apply_filters)
         self.cmb_level.currentIndexChanged.connect(self._apply_filters)
         self.txt_search.textChanged.connect(self._apply_filters)
 
         root.addSpacing(12)  # separador visual
 
-        # ───────────── Área centr al (scroll) ─────────────
+        # ───────────── Central area (scroll) ─────────────
         self._scroll = QScrollArea(widgetResizable=True)
         self._scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
@@ -76,7 +76,7 @@ class TipsSection(QWidget):
         self._scroll.setWidget(self._inner)
         root.addWidget(self._scroll, 1)
 
-        # ───────────── Barra inferior de acciones ────────
+        # ───────────── Bottom action bar ────────
         btn_bar = QHBoxLayout()
         self.btn_view_favs = QPushButton("Ver Favoritos")
         self.btn_fav = QPushButton("☆ Favorito")
@@ -99,12 +99,12 @@ class TipsSection(QWidget):
         btn_bar.addWidget(self.btn_next)
         root.addLayout(btn_bar)
 
-        # ───────────── Atajos de teclado ─────────────
+        # ───────────── Keyboard shortcuts ─────────────
         QShortcut(QKeySequence("F"), self, activated=self._shortcut_toggle_fav)
         QShortcut(QKeySequence("Right"), self, activated=self._shortcut_next)
         QShortcut(QKeySequence("Escape"), self, activated=self._shortcut_back)
 
-        # Carga inicial
+        # Initial load
         self._show_tip()
 
     # ╔════════════════════════ DB HELPERS ═════════════════════╗
@@ -212,7 +212,7 @@ class TipsSection(QWidget):
             self._inner_lay.addWidget(QLabel("Sin resultados para ese filtro."))
             self._current_tip = None
         else:
-            # sin filtros => muestra solo uno
+            # no filters => show only one
             if (self.cmb_cat.currentText() == "Todas"
                     and self.cmb_level.currentText() == "Todos"
                     and not self.txt_search.text().strip()):

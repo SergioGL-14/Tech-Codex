@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-sections/documentation_section.py  ·  Documentación
-Refactorizado 28-abr-2025
+sections/documentation_section.py  -  Documentation
+Refactored 28-Apr-2025
 """
 
 from __future__ import annotations
@@ -30,12 +30,12 @@ from utils import (
 )
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Directorio raíz de documentos
+# Documents root directory
 DOCS_DIR = DATA_DIR / "docs"
 DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Configuración y helpers de iconos para categorías
+# Category settings and icon helpers
 ICONS_DIR = BASE_DIR / "icons"
 ICONS_DIR.mkdir(exist_ok=True)
 
@@ -49,24 +49,24 @@ def _slugify(txt: str) -> str:
 
 def _copy_icon(src: str, categoria: str) -> str:
     """
-    Copia el icono externo dentro de icons/<categoria>/ y devuelve
-    la ruta relativa al proyecto. Si ya está dentro de BASE_DIR,
-    devuelve la ruta relativa directamente.
+    Copies an external icon into icons/<categoria>/ and returns the
+    project-relative path. If it is already inside BASE_DIR,
+    it returns the relative path directly.
     """
     if not src:
         return ""
     src_p = Path(src).resolve()
     try:
-        # Si ya está dentro del proyecto
+        # Already inside the project
         return src_p.relative_to(BASE_DIR).as_posix()
     except ValueError:
         pass
-    # validar extensión y tamaño
+    # validate extension and size
     if src_p.suffix.lower() not in _VALID_EXTS:
         raise ValueError("Formato no admitido (png/jpg/jpeg/ico).")
     if src_p.stat().st_size > _MAX_ICON:
         raise ValueError("Icono demasiado grande (>2 MB).")
-    # copiar a carpeta icons/<categoria>/
+    # copy into icons/<categoria>/ folder
     subdir = ICONS_DIR / _slugify(categoria)
     subdir.mkdir(parents=True, exist_ok=True)
     dest = subdir / f"{_slugify(categoria)}_{src_p.name}"
@@ -93,7 +93,7 @@ def _pixmap(rel: str) -> Optional[QPixmap]:
     return pm
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Tabla de configuración de categorías
+# Category settings table
 exec_sql("""
 CREATE TABLE IF NOT EXISTS CategorySettings (
     categoria              TEXT PRIMARY KEY,
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS CategorySettings (
 
 # ──────────────────────────────────────────────────────────────────────────────
 class CategorySettingsDialog(QDialog):
-    """Diálogo para crear/editar categoría."""
+    """Dialog to create/edit a category."""
     def __init__(
         self,
         parent,
@@ -117,11 +117,11 @@ class CategorySettingsDialog(QDialog):
         self.resize(520, 240)
         form = QFormLayout(self)
 
-        # Nombre de categoría
+        # Category name
         self.txt_name = QLineEdit(categoria)
         form.addRow("Nombre categoría *:", self.txt_name)
 
-        # Carpeta predeterminada
+        # Default folder
         self.txt_folder = QLineEdit(carpeta)
         btn_folder = QPushButton("…")
         btn_folder.clicked.connect(self._browse_folder)
@@ -132,7 +132,7 @@ class CategorySettingsDialog(QDialog):
         w_folder.setLayout(row_f)
         form.addRow("Carpeta destino *:", w_folder)
 
-        # Icono
+        # Icon
         self.txt_icon = QLineEdit(icono)
         btn_icon = QPushButton("…")
         btn_icon.clicked.connect(self._browse_icon)
@@ -175,7 +175,7 @@ class CategorySettingsDialog(QDialog):
 
 # ──────────────────────────────────────────────────────────────────────────────
 class DocEntryDialog(QDialog):
-    """Diálogo para crear/editar una entrada."""
+    """Dialog to create/edit an entry."""
     def __init__(
         self,
         parent,
@@ -289,14 +289,14 @@ class FileCreatorDialog(QDialog):
 
 # ──────────────────────────────────────────────────────────────────────────────
 class DocumentationSection(QWidget):
-    """Sección de Documentación completa."""
+    """Full Documentation section."""
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self._layout = QVBoxLayout(self)
         self._build_index()
 
     def _build_index(self):
-        """Pantalla de categorías."""
+        """Categories screen."""
         clear_layout(self._layout)
         bar = QHBoxLayout()
         self.txt_bus_cat = QLineEdit(placeholderText="Buscar categoría…")
@@ -316,7 +316,7 @@ class DocumentationSection(QWidget):
         self._refresh_categories()
 
     def _refresh_categories(self):
-        """Repoblar grid de categorías con iconos en las tarjetas."""
+        """Rebuild the category grid with icons on the cards."""
         clear_layout(self.grid)
         filtro = self.txt_bus_cat.text().strip().lower()
 
@@ -328,7 +328,7 @@ class DocumentationSection(QWidget):
         COLS = 4
         for idx, cat in enumerate(cats):
             r, c = divmod(idx, COLS)
-            # obtener icono desde la BD
+            # get icon from DB
             row = fetchone(
                 "SELECT icono FROM CategorySettings WHERE categoria=?",
                 (cat,)
@@ -349,7 +349,7 @@ class DocumentationSection(QWidget):
             btn.clicked.connect(lambda _, cc=cat: self._open_category(cc))
             self.grid.addWidget(btn, r, c)
 
-        # tile crear nueva categoría
+        # new-category tile
         idx = len(cats)
         r, c = divmod(idx, COLS)
         plus = QPushButton("+")
@@ -359,7 +359,7 @@ class DocumentationSection(QWidget):
         self.grid.addWidget(plus, r, c)
 
     def _create_category(self):
-        """Lanza el diálogo para crear una nueva categoría."""
+        """Opens the dialog to create a new category."""
         dlg = CategorySettingsDialog(self, "", str(DOCS_DIR), "")
         if dlg.exec() != QDialog.DialogCode.Accepted:
             return
@@ -383,7 +383,7 @@ class DocumentationSection(QWidget):
         self._build_index()
 
     def _open_category(self, categoria: str):
-        """Detalle de una categoría."""
+        """Detail of one category."""
         clear_layout(self._layout)
         self._categoria = categoria
 
@@ -394,7 +394,7 @@ class DocumentationSection(QWidget):
         carpeta_def = row["carpeta_predeterminada"] if row else str(DOCS_DIR/categoria)
         icono_rel   = row["icono"]                if row else ""
 
-        # fila superior
+        # top row
         top = QHBoxLayout()
         btn_back = QPushButton("◀️ Volver")
         btn_back.clicked.connect(self._build_index)
@@ -413,7 +413,7 @@ class DocumentationSection(QWidget):
         top.addWidget(btn_del)
         self._layout.addLayout(top)
 
-        # título + icono
+        # title + icon
         lbl = QLabel(f"📚 {categoria or 'Nueva categoría'}")
         lbl.setStyleSheet("font-size:20px;font-weight:bold;")
         self._layout.addWidget(lbl)
@@ -425,7 +425,7 @@ class DocumentationSection(QWidget):
                 ico.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 self._layout.addWidget(ico)
 
-        # filtros de entradas
+        # entry filters
         bar = QHBoxLayout()
         self.txt_bus = QLineEdit(placeholderText="Buscar entrada…")
         self.cmb_tipo = QComboBox()
@@ -435,7 +435,7 @@ class DocumentationSection(QWidget):
         bar.addStretch()
         self._layout.addLayout(bar)
 
-        # contenedor de entradas
+        # entries container
         scroll = QScrollArea(widgetResizable=True)
         container = QWidget()
         self.v_entries = QVBoxLayout(container)
@@ -443,7 +443,7 @@ class DocumentationSection(QWidget):
         scroll.setWidget(container)
         self._layout.addWidget(scroll, 1)
 
-        # acciones
+        # actions
         row = QHBoxLayout()
         btn_new    = QPushButton("➕ Nueva entrada")
         btn_new.clicked.connect(self._new_entry)
@@ -453,7 +453,7 @@ class DocumentationSection(QWidget):
         row.addWidget(btn_create)
         self._layout.addLayout(row)
 
-        # señales
+        # signals
         self.txt_bus.textChanged.connect(self._refresh_entries)
         self.cmb_tipo.currentIndexChanged.connect(self._refresh_entries)
         self._refresh_entries()
