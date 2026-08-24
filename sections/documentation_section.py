@@ -42,7 +42,7 @@ ICONS_DIR.mkdir(exist_ok=True)
 _MAX_ICON   = 2 * 1024 * 1024  # 2 MB
 _VALID_EXTS = {".png", ".jpg", ".jpeg", ".ico"}
 _SLUG_RX    = re.compile(r"[^A-Za-z0-9._-]+")
-_PIX_CACHE: dict[str, QPixmap] = {}  # cache: ruta absoluta → QPixmap
+_PIX_CACHE: dict[str, QPixmap] = {}  # cache: absolute path -> QPixmap
 
 def _slugify(txt: str) -> str:
     return (_SLUG_RX.sub("_", txt.strip()) or "unnamed")[:50]

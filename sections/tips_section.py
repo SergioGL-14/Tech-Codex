@@ -63,7 +63,7 @@ class TipsSection(QWidget):
         self.cmb_level.currentIndexChanged.connect(self._apply_filters)
         self.txt_search.textChanged.connect(self._apply_filters)
 
-        root.addSpacing(12)  # separador visual
+        root.addSpacing(12)  # visual spacer
 
         # ───────────── Central area (scroll) ─────────────
         self._scroll = QScrollArea(widgetResizable=True)

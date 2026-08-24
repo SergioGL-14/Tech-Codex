@@ -51,7 +51,7 @@ class AppsSection(QWidget):
 
     def __init__(
         self,
-        base_dir: Path,             # …/app en DATA_DIR
+        base_dir: Path,             # .../app inside DATA_DIR
         ext_map: dict[str, str],    # {".exe": "EXE", ".ps1": "PowerShell", …}
         parent: Optional[QWidget] = None,
     ) -> None:

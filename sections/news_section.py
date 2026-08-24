@@ -26,7 +26,7 @@ from PyQt6.QtWidgets import (
     QScrollArea, QSizePolicy, QVBoxLayout, QWidget,
 )
 
-from utils import DB_PATH, clear_layout, get_conn  # ← utilidades comunes
+from utils import DB_PATH, clear_layout, get_conn  # common utilities
 
 _LOG = logging.getLogger(__name__)
 _LOG.setLevel(logging.INFO)
@@ -35,9 +35,9 @@ _LOG.setLevel(logging.INFO)
 @dataclass(slots=True, frozen=True)
 class NewsCfg:
     DB_FILE:   Path = DB_PATH
-    LIMIT:     int  = 50                # nº noticias que se conservan (salvo fav)
-    INTERVAL:  int  = 10                # minutos entre recargas automáticas
-    RETRIES:   int  = 3                 # intentos por feed
+    LIMIT:     int  = 50                # news kept (favorites excluded)
+    INTERVAL:  int  = 10                # minutes between auto-reloads
+    RETRIES:   int  = 3                 # attempts per feed
     FEEDS: Sequence[tuple[str, str]] = (
         ("Genbeta",           "https://www.genbeta.com/rss"),
         ("MuyComputer",       "https://www.muycomputer.com/feed"),
@@ -93,7 +93,7 @@ def db_fetch(sql: str, params: Sequence = ()) -> list[sqlite3.Row]:
 
 # ╔══════════════════════  RSS Fetcher  ════════════════════════════╗
 class RSSFetcher(QThread):
-    finished = pyqtSignal(int)          # nº de nuevas noticias
+    finished = pyqtSignal(int)          # number of new items
 
     def __init__(self, feeds: Iterable[tuple[str, str]]) -> None:
         super().__init__()
